@@ -1,0 +1,14 @@
+[package]
+name = "fhx"
+version = "0.1.0"
+edition = "2024"
+authors = [ "Antoine Beyeler"]
+description = "Embassy-based driver for the FHX-8CV and FHX-8GT eurorack modules"
+license = "MIT"
+repository = "https://github.com/daisy-embassy/daisy-embassy"
+categories = ["embedded"]
+
+
+[dependencies]
+embedded-hal = "1.0"
+embedded-hal-async  = "1.0"
