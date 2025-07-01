@@ -1,3 +1,5 @@
+#![no_std]
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum GtChannel {
     Channel1 = 0,
