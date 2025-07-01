@@ -1,5 +1,5 @@
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum FhxGtChannel {
+pub enum GtChannel {
     Channel1 = 0,
     Channel2 = 1,
     Channel3 = 2,
@@ -11,7 +11,7 @@ pub enum FhxGtChannel {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum FhxGtAddress {
+pub enum GtAddress {
     Gt0 = 0,
     Gt1 = 1,
     Gt2 = 2,
@@ -19,7 +19,7 @@ pub enum FhxGtAddress {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum FhxCvChannel {
+pub enum CvChannel {
     Channel1 = 0x00,
     Channel2 = 0x20,
     Channel3 = 0x40,
@@ -31,7 +31,7 @@ pub enum FhxCvChannel {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum FhxCvAddress {
+pub enum CvAddress {
     Cv1 = 1,
     Cv2 = 2,
     Cv3 = 3,
@@ -80,38 +80,38 @@ where
         };
 
         // Initialize all gates to 0
-        helper.update_gates_blocking(FhxGtAddress::Gt0);
-        helper.update_gates_blocking(FhxGtAddress::Gt1);
-        helper.update_gates_blocking(FhxGtAddress::Gt2);
-        helper.update_gates_blocking(FhxGtAddress::Gt3);
+        helper.update_gates_blocking(GtAddress::Gt0);
+        helper.update_gates_blocking(GtAddress::Gt1);
+        helper.update_gates_blocking(GtAddress::Gt2);
+        helper.update_gates_blocking(GtAddress::Gt3);
 
         helper
     }
 
-    pub async fn set_gates(&mut self, addr: FhxGtAddress, values: u8) {
+    pub async fn set_gates(&mut self, addr: GtAddress, values: u8) {
         self.gates_value[addr as usize] = values;
         self.update_gates(addr).await;
     }
 
-    pub async fn gate_high(&mut self, addr: FhxGtAddress, channel: FhxGtChannel) {
+    pub async fn gate_high(&mut self, addr: GtAddress, channel: GtChannel) {
         self.gates_value[addr as usize] |= 1 << channel as u8;
         self.update_gates(addr).await;
     }
 
-    pub async fn gate_low(&mut self, addr: FhxGtAddress, channel: FhxGtChannel) {
+    pub async fn gate_low(&mut self, addr: GtAddress, channel: GtChannel) {
         self.gates_value[addr as usize] &= !(1 << channel as u8);
         self.update_gates(addr).await;
     }
 
     // ---
 
-    pub fn set_cv_polarity(&mut self, addr: FhxCvAddress, polarity: u8) {
+    pub fn set_cv_polarity(&mut self, addr: CvAddress, polarity: u8) {
         self.set_cv_address(addr);
 
         self.write_blocking(&[0x14u8, 0x00, polarity, 0x00]);
     }
 
-    pub async fn set_cv_raw(&mut self, addr: FhxCvAddress, channel: FhxCvChannel, value: u16) {
+    pub async fn set_cv_raw(&mut self, addr: CvAddress, channel: CvChannel, value: u16) {
         let message = [
             0x03u8,
             channel as u8 | ((value & 0xF000) >> 12) as u8,
@@ -125,18 +125,18 @@ where
 
     // ---
 
-    async fn update_gates(&mut self, addr: FhxGtAddress) {
+    async fn update_gates(&mut self, addr: GtAddress) {
         match addr {
-            FhxGtAddress::Gt0 => {
+            GtAddress::Gt0 => {
                 self.set_address(false, false, false);
             }
-            FhxGtAddress::Gt1 => {
+            GtAddress::Gt1 => {
                 self.set_address(true, false, false);
             }
-            FhxGtAddress::Gt2 => {
+            GtAddress::Gt2 => {
                 self.set_address(false, true, false);
             }
-            FhxGtAddress::Gt3 => {
+            GtAddress::Gt3 => {
                 self.set_address(true, true, false);
             }
         }
@@ -145,18 +145,18 @@ where
             .await;
     }
 
-    fn update_gates_blocking(&mut self, addr: FhxGtAddress) {
+    fn update_gates_blocking(&mut self, addr: GtAddress) {
         match addr {
-            FhxGtAddress::Gt0 => {
+            GtAddress::Gt0 => {
                 self.set_address(false, false, false);
             }
-            FhxGtAddress::Gt1 => {
+            GtAddress::Gt1 => {
                 self.set_address(true, false, false);
             }
-            FhxGtAddress::Gt2 => {
+            GtAddress::Gt2 => {
                 self.set_address(false, true, false);
             }
-            FhxGtAddress::Gt3 => {
+            GtAddress::Gt3 => {
                 self.set_address(true, true, false);
             }
         }
@@ -164,15 +164,15 @@ where
         self.write_blocking(&[0x04u8, 0x00, self.gates_value[addr as usize], 0x00]);
     }
 
-    fn set_cv_address(&mut self, addr: FhxCvAddress) {
+    fn set_cv_address(&mut self, addr: CvAddress) {
         match addr {
-            FhxCvAddress::Cv1 => self.set_address(true, false, false),
-            FhxCvAddress::Cv2 => self.set_address(false, true, false),
-            FhxCvAddress::Cv3 => self.set_address(true, true, false),
-            FhxCvAddress::Cv4 => self.set_address(false, false, true),
-            FhxCvAddress::Cv5 => self.set_address(true, false, true),
-            FhxCvAddress::Cv6 => self.set_address(false, true, true),
-            FhxCvAddress::Cv7 => self.set_address(true, true, true),
+            CvAddress::Cv1 => self.set_address(true, false, false),
+            CvAddress::Cv2 => self.set_address(false, true, false),
+            CvAddress::Cv3 => self.set_address(true, true, false),
+            CvAddress::Cv4 => self.set_address(false, false, true),
+            CvAddress::Cv5 => self.set_address(true, false, true),
+            CvAddress::Cv6 => self.set_address(false, true, true),
+            CvAddress::Cv7 => self.set_address(true, true, true),
         }
     }
 
