@@ -41,12 +41,12 @@ pub enum FhxCvAddress {
     Cv7 = 7,
 }
 
-pub struct FhxHelper<'a, Spi, Pin> {
+pub struct Fhx<'a, Spi, PinCS, PinA0, PinA1, PinA2> {
     spi: Spi,
-    cs: Pin,
-    addr0: Pin,
-    addr1: Pin,
-    addr2: Pin,
+    cs: PinCS,
+    addr0: PinA0,
+    addr1: PinA1,
+    addr2: PinA2,
 
     // current gate values, cached to allow switching a single gate
     gates_value: [u8; 4],
@@ -55,12 +55,16 @@ pub struct FhxHelper<'a, Spi, Pin> {
     tx_buffer: &'a mut [u8; 4],
 }
 
-impl<'a, Spi, Pin> FhxHelper<'a, Spi, Pin>
+impl<'a, Spi, PinCS, PinA0, PinA1, PinA2> Fhx<'a, Spi, PinCS, PinA0, PinA1, PinA2>
 where
     Spi: embedded_hal_async::spi::SpiBus<u8> + embedded_hal::spi::SpiBus<u8>,
-    Pin: embedded_hal::digital::OutputPin,
+    PinCS: embedded_hal::digital::OutputPin,
+    PinA0: embedded_hal::digital::OutputPin,
+    PinA1: embedded_hal::digital::OutputPin,
+    PinA2: embedded_hal::digital::OutputPin,
+
 {
-    pub fn new(spi: Spi, mut cs: Pin, addr0: Pin, addr1: Pin, addr2: Pin, tx_buffer: &'a mut [u8; 4]) -> Self {
+    pub fn new(spi: Spi, mut cs: PinCS, addr0: PinA0, addr1: PinA1, addr2: PinA2, tx_buffer: &'a mut [u8; 4]) -> Self {
         cs.set_high().unwrap();
 
         let mut helper = Self {
