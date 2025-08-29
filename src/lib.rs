@@ -1,5 +1,7 @@
 #![no_std]
 
+pub use dma_accessible;
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum GtChannel {
     Channel1 = 0,
