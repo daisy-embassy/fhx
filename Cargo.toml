@@ -12,4 +12,4 @@ categories = ["embedded"]
 [dependencies]
 embedded-hal = "1.0"
 embedded-hal-async  = "1.0"
-dma-accessible = { git = "https://github.com/daisy-embassy/dma-accessible.git", rev = "06ceee814a8c11146935c15f58a10b91097d82ac" }
+dma-accessible = { git = "https://github.com/daisy-embassy/dma-accessible.git", rev = "3ceb8dda6dbd447729d56abe6e875a1af7ca54e8" }

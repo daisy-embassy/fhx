@@ -43,7 +43,7 @@ pub enum CvAddress {
     Cv7 = 7,
 }
 
-pub struct Fhx<Spi, PinCS, PinA0, PinA1, PinA2, DmaAc: dma_accessible::DmaAccessible> {
+pub struct Fhx<Spi, PinCS, PinA0, PinA1, PinA2, DmaAc> {
     spi: Spi,
     cs: PinCS,
     addr0: PinA0,
