@@ -69,7 +69,7 @@ where
     DmaAc: dma_accessible::DmaAccessible,
 
 {
-    pub fn new(spi: Spi, mut cs: PinCS, addr0: PinA0, addr1: PinA1, addr2: PinA2, tx_buffer: &'static mut [u8; 4]) -> Self {
+    pub fn new(spi: Spi, mut cs: PinCS, addr0: PinA0, addr1: PinA1, addr2: PinA2, tx_buffer: dma_accessible::DmaBuffer<u8, DmaAc>) -> Self {
         cs.set_high().unwrap();
 
         let mut helper = Self {
@@ -81,7 +81,7 @@ where
 
             gates_value: [0; 4],
 
-            tx_buffer: dma_accessible::DmaBuffer::new(tx_buffer),
+            tx_buffer,
         };
 
         // Initialize all gates to 0
