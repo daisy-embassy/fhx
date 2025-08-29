@@ -3,6 +3,11 @@
 version = 4
 
 [[package]]
+name = "dma-accessible"
+version = "0.1.0"
+source = "git+https://github.com/daisy-embassy/dma-accessible.git?rev=06ceee814a8c11146935c15f58a10b91097d82ac#06ceee814a8c11146935c15f58a10b91097d82ac"
+
+[[package]]
 name = "embedded-hal"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -21,6 +26,7 @@ dependencies = [
 name = "fhx"
 version = "0.1.0"
 dependencies = [
+ "dma-accessible",
  "embedded-hal",
  "embedded-hal-async",
 ]
