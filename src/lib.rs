@@ -1,5 +1,7 @@
 #![no_std]
 
+pub use dma_accessible;
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum GtChannel {
     Channel1 = 0,
@@ -43,7 +45,7 @@ pub enum CvAddress {
     Cv7 = 7,
 }
 
-pub struct Fhx<'a, Spi, PinCS, PinA0, PinA1, PinA2> {
+pub struct Fhx<Spi, PinCS, PinA0, PinA1, PinA2, DmaAc> {
     spi: Spi,
     cs: PinCS,
     addr0: PinA0,
@@ -54,19 +56,20 @@ pub struct Fhx<'a, Spi, PinCS, PinA0, PinA1, PinA2> {
     gates_value: [u8; 4],
 
     /// Transmit buffer for SPI communication. Must be DMA-accessible.
-    tx_buffer: &'a mut [u8; 4],
+    tx_buffer: dma_accessible::DmaBuffer<u8, 4, DmaAc>,
 }
 
-impl<'a, Spi, PinCS, PinA0, PinA1, PinA2> Fhx<'a, Spi, PinCS, PinA0, PinA1, PinA2>
+impl<Spi, PinCS, PinA0, PinA1, PinA2, DmaAc> Fhx<Spi, PinCS, PinA0, PinA1, PinA2, DmaAc>
 where
     Spi: embedded_hal_async::spi::SpiBus<u8> + embedded_hal::spi::SpiBus<u8>,
     PinCS: embedded_hal::digital::OutputPin,
     PinA0: embedded_hal::digital::OutputPin,
     PinA1: embedded_hal::digital::OutputPin,
     PinA2: embedded_hal::digital::OutputPin,
+    DmaAc: dma_accessible::DmaAccessible,
 
 {
-    pub fn new(spi: Spi, mut cs: PinCS, addr0: PinA0, addr1: PinA1, addr2: PinA2, tx_buffer: &'a mut [u8; 4]) -> Self {
+    pub fn new(spi: Spi, mut cs: PinCS, addr0: PinA0, addr1: PinA1, addr2: PinA2, tx_buffer: dma_accessible::DmaBuffer<u8, 4, DmaAc>) -> Self {
         cs.set_high().unwrap();
 
         let mut helper = Self {
@@ -189,7 +192,7 @@ where
         self.tx_buffer.copy_from_slice(data);
 
         self.cs.set_low().unwrap();
-        <Spi as embedded_hal_async::spi::SpiBus<u8>>::write(&mut self.spi, self.tx_buffer)
+        <Spi as embedded_hal_async::spi::SpiBus<u8>>::write(&mut self.spi, &self.tx_buffer)
             .await
             .unwrap();
         self.cs.set_high().unwrap();
