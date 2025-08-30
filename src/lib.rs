@@ -56,7 +56,7 @@ pub struct Fhx<Spi, PinCS, PinA0, PinA1, PinA2, DmaAc> {
     gates_value: [u8; 4],
 
     /// Transmit buffer for SPI communication. Must be DMA-accessible.
-    tx_buffer: dma_accessible::DmaBuffer<u8, DmaAc>,
+    tx_buffer: dma_accessible::DmaBuffer<u8, 4, DmaAc>,
 }
 
 impl<Spi, PinCS, PinA0, PinA1, PinA2, DmaAc> Fhx<Spi, PinCS, PinA0, PinA1, PinA2, DmaAc>
@@ -69,7 +69,7 @@ where
     DmaAc: dma_accessible::DmaAccessible,
 
 {
-    pub fn new(spi: Spi, mut cs: PinCS, addr0: PinA0, addr1: PinA1, addr2: PinA2, tx_buffer: dma_accessible::DmaBuffer<u8, DmaAc>) -> Self {
+    pub fn new(spi: Spi, mut cs: PinCS, addr0: PinA0, addr1: PinA1, addr2: PinA2, tx_buffer: dma_accessible::DmaBuffer<u8, 4, DmaAc>) -> Self {
         cs.set_high().unwrap();
 
         let mut helper = Self {
@@ -189,10 +189,10 @@ where
     }
 
     async fn write(&mut self, data: &[u8; 4]) {
-        self.tx_buffer.as_mut_slice().copy_from_slice(data);
+        self.tx_buffer.copy_from_slice(data);
 
         self.cs.set_low().unwrap();
-        <Spi as embedded_hal_async::spi::SpiBus<u8>>::write(&mut self.spi, self.tx_buffer.as_slice())
+        <Spi as embedded_hal_async::spi::SpiBus<u8>>::write(&mut self.spi, &self.tx_buffer)
             .await
             .unwrap();
         self.cs.set_high().unwrap();

@@ -5,7 +5,10 @@ version = 4
 [[package]]
 name = "dma-accessible"
 version = "0.1.0"
-source = "git+https://github.com/daisy-embassy/dma-accessible.git?rev=52f779b53b5c2c157190ccbcd49d2937edee42de#52f779b53b5c2c157190ccbcd49d2937edee42de"
+source = "git+https://github.com/daisy-embassy/dma-accessible.git?rev=95bf6ee8cf3a90c1cd51fc7de208da2d0cd938d9#95bf6ee8cf3a90c1cd51fc7de208da2d0cd938d9"
+dependencies = [
+ "grounded",
+]
 
 [[package]]
 name = "embedded-hal"
@@ -30,3 +33,18 @@ dependencies = [
  "embedded-hal",
  "embedded-hal-async",
 ]
+
+[[package]]
+name = "grounded"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "917d82402c7eb9755fdd87d52117701dae9e413a6abb309fac2a13af693b6080"
+dependencies = [
+ "portable-atomic",
+]
+
+[[package]]
+name = "portable-atomic"
+version = "1.11.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f84267b20a16ea918e43c6a88433c2d54fa145c92a811b5b047ccbe153674483"
